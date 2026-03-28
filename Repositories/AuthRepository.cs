@@ -1,6 +1,6 @@
 using System.Data;
 using System.Data.SqlClient;
-using HospitalManagement.Entities;
+using HospitalManagement.Models;
 using Microsoft.Data.SqlClient;
 namespace HospitalManagement.Repositories
 {

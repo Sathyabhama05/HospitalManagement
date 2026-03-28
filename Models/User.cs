@@ -1,6 +1,6 @@
 // ENTITIES (internal models mapping to DB)
 
-namespace HospitalManagement.Entities
+namespace HospitalManagement.Models
 {
     public class User
     {
