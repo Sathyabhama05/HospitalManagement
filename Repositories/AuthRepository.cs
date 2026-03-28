@@ -28,31 +28,41 @@ namespace HospitalManagement.Repositories
         // Register a new user
         // ------------------------------------------
         public async Task<int> RegisterUserAsync(string fullName, string email, string phone, string passwordHash, int roleId)
-        {
-            using var connection = new SqlConnection(_connectionString);
-            using var command = new SqlCommand("sp_RegisterUser", connection)
-            {
-                CommandType = CommandType.StoredProcedure
-            };
+{
+    using var connection = new SqlConnection(_connectionString);
+    using var command = new SqlCommand("sp_RegisterUser", connection)
+    {
+        CommandType = CommandType.StoredProcedure
+    };
 
-            command.Parameters.AddWithValue("@FullName", fullName);
-            command.Parameters.AddWithValue("@Email", email);
-            command.Parameters.AddWithValue("@Phone", (object)phone ?? DBNull.Value);
-            command.Parameters.AddWithValue("@PasswordHash", passwordHash);
-            command.Parameters.AddWithValue("@RoleId", roleId);
+    command.Parameters.AddWithValue("@FullName", fullName);
+    command.Parameters.AddWithValue("@Email", email);
+    command.Parameters.AddWithValue("@PasswordHash", passwordHash);
+    command.Parameters.AddWithValue("@Phone", (object)phone ?? DBNull.Value);
 
-            var outputParam = new SqlParameter("@NewUserId", SqlDbType.Int)
-            {
-                Direction = ParameterDirection.Output
-            };
-            command.Parameters.Add(outputParam);
+    // ← These two OUTPUT params are critical
+    var userIdParam = new SqlParameter("@UserId", SqlDbType.Int)
+    {
+        Direction = ParameterDirection.Output
+    };
+    var messageParam = new SqlParameter("@Message", SqlDbType.NVarChar, 200)
+    {
+        Direction = ParameterDirection.Output
+    };
 
-            await connection.OpenAsync();
-            await command.ExecuteNonQueryAsync();
+    command.Parameters.Add(userIdParam);
+    command.Parameters.Add(messageParam);
 
-            return (int)outputParam.Value;
-        }
+    await connection.OpenAsync();
+    await command.ExecuteNonQueryAsync();
 
+    var userId = (int)userIdParam.Value;
+
+    if (userId == -1)
+        throw new Exception(messageParam.Value.ToString());
+
+    return userId;
+}
         // Get user by email (used for login)
  
         public async Task<User> GetUserByEmailAsync(string email)

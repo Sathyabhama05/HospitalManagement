@@ -60,13 +60,9 @@
               "target": "Package",
               "version": "[8.17.0, )"
             },
-            "Microsoft.OpenApi": {
-              "target": "Package",
-              "version": "[3.5.0, )"
-            },
             "Swashbuckle.AspNetCore": {
               "target": "Package",
-              "version": "[10.1.7, )"
+              "version": "[6.5.0, )"
             },
             "System.IdentityModel.Tokens.Jwt": {
               "target": "Package",

@@ -1,5 +1,3 @@
-USE HealthcareDB;
-GO
 
 -- sp_RegisterUser
 
@@ -89,43 +87,30 @@ GO
 
 -- sp_SaveRefreshToken
 
-CREATE OR ALTER PROCEDURE sp_SaveRefreshToken
+CREATE PROCEDURE sp_SaveRefreshToken
     @UserId    INT,
     @Token     NVARCHAR(500),
     @ExpiresAt DATETIME2
 AS
 BEGIN
     SET NOCOUNT ON;
-
-    -- Revoke old tokens
     UPDATE RefreshTokens
     SET IsRevoked = 1
-    WHERE UserId    = @UserId
-      AND IsRevoked = 0;
+    WHERE UserId = @UserId AND IsRevoked = 0;
 
-    -- Insert new token
     INSERT INTO RefreshTokens (UserId, Token, ExpiresAt)
     VALUES (@UserId, @Token, @ExpiresAt);
 END
 GO
 
--- sp_GetRefreshToken
-
-CREATE OR ALTER PROCEDURE sp_GetRefreshToken
+CREATE PROCEDURE sp_GetRefreshToken
     @Token NVARCHAR(500)
 AS
 BEGIN
     SET NOCOUNT ON;
-    SELECT rt.TokenId,
-           rt.UserId,
-           rt.Token,
-           rt.ExpiresAt,
-           rt.IsRevoked,
-           rt.CreatedAt,
-           u.Email,
-           u.RoleId,
-           r.RoleName,
-           u.FullName
+    SELECT rt.TokenId, rt.UserId, rt.Token, rt.ExpiresAt,
+           rt.IsRevoked, rt.CreatedAt,
+           u.Email, u.RoleId, r.RoleName, u.FullName
     FROM RefreshTokens rt
     INNER JOIN Users u ON rt.UserId = u.UserId
     INNER JOIN Roles r ON u.RoleId  = r.RoleId
@@ -133,9 +118,7 @@ BEGIN
 END
 GO
 
--- sp_RevokeRefreshToken
-
-CREATE OR ALTER PROCEDURE sp_RevokeRefreshToken
+CREATE PROCEDURE sp_RevokeRefreshToken
     @Token NVARCHAR(500)
 AS
 BEGIN
@@ -143,20 +126,5 @@ BEGIN
     UPDATE RefreshTokens
     SET IsRevoked = 1
     WHERE Token = @Token;
-END
-GO
-
--- sp_CleanupExpiredTokens
-
-CREATE OR ALTER PROCEDURE sp_CleanupExpiredTokens
-    @DeletedCount INT OUTPUT
-AS
-BEGIN
-    SET NOCOUNT ON;
-    DELETE FROM RefreshTokens
-    WHERE ExpiresAt < GETUTCDATE()
-      AND IsRevoked  = 1;
-
-    SET @DeletedCount = @@ROWCOUNT;
 END
 GO

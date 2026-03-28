@@ -20,9 +20,6 @@ namespace HospitalManagement.DTOs.Auth
         [Required]
         [MinLength(6, ErrorMessage = "Password must be at least 6 characters.")]
         public string Password { get; set; }
-
-        // RoleId: 1=Admin, 2=Doctor, 3=Patient (default Patient)
-        public int RoleId { get; set; } = 3;
     }
 
     public class LoginRequestDto

@@ -1,5 +1,5 @@
 using HospitalManagement.DTOs.Auth;
-using HospitalManagement.Entities;
+using HospitalManagement.Models;
 using HospitalManagement.Repositories;
 using HospitalManagement.Helpers;
 
@@ -32,31 +32,28 @@ namespace HospitalManagement.Services
         }
 
         public async Task<RegisterResponseDto> RegisterAsync(RegisterRequestDto dto)
-        {
-            var passwordHash = BCrypt.Net.BCrypt.HashPassword(dto.Password);
+{
+    var passwordHash = BCrypt.Net.BCrypt.HashPassword(dto.Password);
 
-            var newUserId = await _authRepo.RegisterUserAsync(
-                dto.FullName,
-                dto.Email,
-                dto.Phone,
-                passwordHash,
-                dto.RoleId
-            );
+    var newUserId = await _authRepo.RegisterUserAsync(
+        dto.FullName,
+        dto.Email,
+        dto.Phone,
+        passwordHash,
+        3  // ← hardcoded Patient RoleId, removed from DTO
+    );
 
-            _logger.LogInformation("New user registered: {Email} | Role: {RoleId}", dto.Email, dto.RoleId);
+    _logger.LogInformation("New user registered: {Email}", dto.Email);
 
-            var roleMap = new Dictionary<int, string> { { 1, "Admin" }, { 2, "Doctor" }, { 3, "Patient" } };
-            roleMap.TryGetValue(dto.RoleId, out var roleName);
-
-            return new RegisterResponseDto
-            {
-                UserId   = newUserId,
-                FullName = dto.FullName,
-                Email    = dto.Email,
-                Role     = roleName ?? "Patient",
-                Message  = "Registration successful."
-            };
-        }
+    return new RegisterResponseDto
+    {
+        UserId   = newUserId,
+        FullName = dto.FullName,
+        Email    = dto.Email,
+        Role     = "Patient",
+        Message  = "Registration successful."
+    };
+}
 
         public async Task<AuthResponseDto> LoginAsync(LoginRequestDto dto)
         {
