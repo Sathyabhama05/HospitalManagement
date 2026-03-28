@@ -1,9 +1,8 @@
 USE HealthcareDB;
 GO
 
--- =============================================
 -- ROLES TABLE
--- =============================================
+
 CREATE TABLE Roles (
     RoleId    INT IDENTITY(1,1) PRIMARY KEY,
     RoleName  NVARCHAR(50)  NOT NULL UNIQUE,
@@ -15,9 +14,8 @@ GO
 INSERT INTO Roles (RoleName) VALUES ('Admin'), ('Doctor'), ('Patient');
 GO
 
--- =============================================
 -- USERS TABLE
--- =============================================
+
 CREATE TABLE Users (
     UserId       INT IDENTITY(1,1) PRIMARY KEY,
     FullName     NVARCHAR(150) NOT NULL,
@@ -32,9 +30,8 @@ CREATE TABLE Users (
 );
 GO
 
--- =============================================
 -- REFRESH TOKENS TABLE
--- =============================================
+
 CREATE TABLE RefreshTokens (
     TokenId   INT IDENTITY(1,1) PRIMARY KEY,
     UserId    INT           NOT NULL,
@@ -46,9 +43,8 @@ CREATE TABLE RefreshTokens (
 );
 GO
 
--- =============================================
 -- INDEXES
--- =============================================
+
 CREATE NONCLUSTERED INDEX IX_Users_Email         ON Users(Email);
 CREATE NONCLUSTERED INDEX IX_Users_RoleId        ON Users(RoleId);
 CREATE NONCLUSTERED INDEX IX_RefreshTokens_UserId ON RefreshTokens(UserId);
